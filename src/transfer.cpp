@@ -1,3 +1,4 @@
+// by Yasuhiro Fujii <http://mimosa-pudica.net>, public domain.
 #include <limits>
 #include <cmath>
 #include <random>

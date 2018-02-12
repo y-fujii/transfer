@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# by Yasuhiro Fujii <http://mimosa-pudica.net>, public domain.
 
 import math
 import numpy
