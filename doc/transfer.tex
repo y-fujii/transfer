@@ -1,0 +1,137 @@
+% vim: textwidth=120
+\documentclass{ltjsarticle}
+\usepackage{amsmath}
+\usepackage{newunicodechar}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{luatexja}
+
+% \block{macro}{
+	\newunicodechar{Ω}{\Omega}
+	\newunicodechar{α}{\alpha}
+	\newunicodechar{γ}{\gamma}
+	\newunicodechar{ε}{\epsilon}
+	\newunicodechar{θ}{\theta}
+	\newunicodechar{π}{\pi}
+	\newunicodechar{ω}{\omega}
+	\newunicodechar{∂}{\partial}
+	\newunicodechar{∇}{\nabla}
+	\newunicodechar{√}{\sqrt}
+	\newunicodechar{∞}{\infty}
+	\newunicodechar{∫}{\int}
+	\newunicodechar{↑}{\uparrow}
+	\newunicodechar{↓}{\downarrow}
+	\newunicodechar{→}{\rightarrow}
+	\newunicodechar{←}{\leftarrow}
+
+	\long\def\block#1#2{\begin{#1}#2\end{#1}}
+	\def\d{\mathrm{d}}
+	\def\L{\left}
+	\def\R{\right}
+
+	\def\ks{{k_{\mathrm s}}}
+	\def\ka{{k_{\mathrm a}}}
+	\def\vx{\vec{x}}
+	\def\vω{\vec{ω}}
+% }
+
+\block{document}{
+	\title{散乱・吸収のある半無限一様媒質による反射率の近似}
+	\author{\small ふじい やすひろ {\tt <http://mimosa-pudica.net>}}
+	\date{\empty}
+	\maketitle
+
+	かきかけ。
+
+	\block{align}{
+		\ks &\, [1 / \mathrm{m}] && \text{: 散乱係数} \\
+		\ka &\, [1 / \mathrm{m}] && \text{: 吸収係数} \\
+		I(t, \vx, \vω) &\, [\mathrm{W} / \mathrm{m}^2 \cdot \mathrm{sr}] && \text{: 放射輝度}
+	}
+
+	等方散乱、一様媒質下での放射伝達方程式 (Radiative transfer equation; RTE) は次の通り。
+	\block{equation}{
+		\frac{∂ I(t, \vx, \vω)}{∂ t} + \vec{n}(\vω) \cdot ∇ I(t, \vx, \vω) =
+		-(\ks + \ka) I(t, \vx, \vω) + \frac{\ks}{4 π} ∫ \d Ω(\vω') \, I(t, \vx, \vω') \,.
+	}
+	ここで $ \vec{n}(\vω) $ は $ \vω $ 方向の単位ベクトルを表す。
+
+	$ I(\cdot) $ が $ t, x, y $ 方向について一様な場合、 $ θ $ を $ +z $ となす角度として、
+	\block{equation}{
+		\cos θ \frac{∂ I(z, θ)}{∂ z} =
+		-(\ks + \ka) I(z, θ) + \frac{\ks}{2} ∫_0^π \d θ' \sin θ' \, I(z, θ') \,, \label{rte_z}
+	}
+	と簡略化される。
+
+	$ I(\cdot) $ が立体角について $ z^-, z^+ $ 半球上でそれぞれ一様に近いと仮定し、次のように展開する。 $ h(\cdot) $ を
+	階段関数として、
+	\block{equation}{
+		I(z, θ) = h \L(\frac{π}{2} - θ \R) I_↑(z) + h \L( θ - \frac{π}{2} \R) I_↓(z) + ε(z, θ) \,,
+		\  |ε|, \L| \frac{∂ ε}{∂ z} \R| \ll |I_↑|, |I_↓|  \,. \label{i_approx}
+	}
+
+	(\ref{rte_z}) に (\ref{i_approx}) を代入し、両辺を $ z^+ $ 半球上で一様に立体角積分
+	( $ ∫_0^{π/2} \d θ \sin θ $ ) すると、
+	\block{equation}{
+		+\frac{1}{2} \frac{\d I_↑}{\d z} = -(\ks + \ka) I_↑ + \frac{\ks}{2} (I_↑ + I_↓) + O(ε) \,. \label{upper_int}
+	}
+ 
+	同様に $ z^- $ 半球で積分 ( $ ∫_{π/2}^π \d θ \sin θ $ ) すると、
+	\block{equation}{
+		-\frac{1}{2} \frac{\d I_↓}{\d z} = -(\ks + \ka) I_↓ + \frac{\ks}{2} (I_↑ + I_↓) + O(ε) \,. \label{lower_int}
+	}
+
+	この計算は次の操作を行ったことに相当している。単位球面上で定義される実関数のなす空間に対し、内積を
+	$ \langle f, g \rangle := ∫ \d Ω(\vω) \, f(\vω) g(\vω) $ で導入し、それぞれ $ z^+, z^- $ 半球のみで一様な値を持つ関
+	数 2 つを基底として含む直交関数系を用意する。この直交関数系で $ I(\cdot) $ を立体角について展開し、係数について成り
+	立つ方程式が (\ref{upper_int}), (\ref{lower_int}) である。
+ 
+	さて、 $ ε $ を無視して (\ref{upper_int}), (\ref{lower_int}) を連立させて解くと、一般解は $ \ka \ne 0 $ のとき
+	$ A, B $ を任意の定数として、
+	\block{align}{
+		I_↑(z) &= A (1 + P) e^{-α z} + B (1 - P) e^{+α z} \\
+		I_↓(z) &= A (1 - P) e^{-α z} - B (1 + P) e^{+α z} \,,
+	}
+	\block{align}{
+		α &= 2 √{\ka (\ks + \ka)} \\
+		P &= √{\frac{\ka}{\ks + \ka}} \,.
+	}
+
+	今、 $ z = 0 $ を境界として $ z < 0 $ の空間に一様に屈折率 1 の媒質が存在し、 $ z > 0 $ の空間は真空である状況を考え
+	る。先の近似のもとで、真空部分について $ I_↑(z), I_↓(z) $ は一定であり、 $ I_↓ $ が媒質への入射、 $ I_↑ $ が出射に対
+	応している。媒質部分については $ z = -∞ $ からの入射がないとして、境界条件
+	\block{align}{
+		{} & \lim_{z → -∞} I_↑(z) = 0 \,,
+	}
+	が課される。また、屈折率が変わらないので、 $ z = 0 $ の境界では単純に $ I_↑(z), I_↓(z) $ が連続であることが条件とな
+	る。
+
+	以上より、 $ z = 0 $ 平面から媒質へ入射した光の反射率は、
+	\block{align}{
+		R = \frac{I_↑(0)}{I_↓(0)} = \frac{√{\ks + \ka} - √{\ka}}{√{\ks + \ka} + √{\ka}} \,. \label{refl}
+	}
+
+	半無限の媒質下で反射率は空間スケールに依存しないため、反射率は $ \ks $ と $ \ka $ の比のみで決まる。 (\ref{refl}) は
+	この性質を満たし、かつ $ \ks \ll \ka \Rightarrow R → 0 ,\, \ks \gg \ka \Rightarrow R → 1 $ となり、定性的に良い振る
+	舞いをする近似になっている (この性質が成り立つかは、実は基底の取り方に依存している。例えば球面調和関数の低次を用いる
+	とこの性質は成り立たない) 。残念ながら $ \ks \simeq \ka $ での値は正しい値と 10\% ほどずれていて、定量的にはそれほど
+	良い近似ではない。
+
+	近似の改善を考える前に、逆変換、つまり反射率から反射・吸収係数を求める式を求めておく。これは CG ソフトウェアなどで、
+	反射色から媒質の散乱・吸収係数を設定する用途を想定している。反射率 $ R $ と減衰係数 $ k := \ks + \ka $ が与えられた
+	とき、 (\ref{refl}) を $ \ks, \ka $ について解くと、
+	\block{align}{
+		\ka &= k {\L( \frac{1 - R}{1 + R} \R) }^2 \\
+		\ks &= k - \ka \,.
+	}
+
+	次に、近似精度を改善するため $ R $ の二次式を考え、係数をモンテカルロ法による数値計算の結果から決定する。
+	\block{equation}{
+		R_\mathrm{improved} = (1 - \delta) R + \delta R^2 \,.
+	}
+
+	平均絶対誤差を最小化した場合、 $ \delta = 0.170 $ で絶対誤差 $ 0.8 \times {10}^{-3} $, 相対誤差は 0.8\% 、
+	平均相対誤差を最小化した場合、 $ \delta = 0.177 $ で絶対誤差 $ 1.3 \times {10}^{-3} $, 相対誤差は 0.4\% である。
+
+	\includegraphics{../build/plot.pdf}
+}
