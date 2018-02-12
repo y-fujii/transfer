@@ -1,7 +1,7 @@
 = Approximation for reflectance from semi-infinite medium
 
-The approximation for reflectance from semi-infinite medium which have a
-scattering and absorption. Inverse transformation (reflectance to
+The simple analytical approximation for reflectance from semi-infinite medium
+which have a scattering and absorption. Inverse transformation (reflectance to
 scattering/absorption coefficients) are also introduced.
 
 See link:build/transfer.pdf[build/transfer.pdf] (currently written only in
