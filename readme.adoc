@@ -4,5 +4,5 @@ The approximation for reflectance from semi-infinite medium which have a
 scattering and absorption. Inverse transformation (reflectance to
 scattering/absorption coefficients) are also introduced.
 
-See build/transfer.pdf[build/transfer.pdf] (currently written only in
+See link:build/transfer.pdf[build/transfer.pdf] (currently written only in
 Japanese).
