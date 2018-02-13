@@ -11,6 +11,7 @@
 	\newunicodechar{Ω}{\Omega}
 	\newunicodechar{α}{\alpha}
 	\newunicodechar{γ}{\gamma}
+	\newunicodechar{δ}{\delta}
 	\newunicodechar{ε}{\epsilon}
 	\newunicodechar{θ}{\theta}
 	\newunicodechar{π}{\pi}
@@ -124,7 +125,7 @@
 	}
 
 	何を最小化するかに依って多少変わってくるが、 $ γ = 1.4 $ で平均絶対誤差 $ 2 \times {10}^{-3} $, 平均相対誤差 1\% 未
-	満である。
+	満である。ちなみに分母を $ 1 + γ P + δ P^2 $ の形にすることで、もう一桁ほど良い近似式を作ることも可能である。
 
 	この式は逆変換、つまり反射率から散乱・吸収係数を求める式もシンプルな形をしている。これは CG ソフトウェアなどで、反射
 	色から媒質の散乱・吸収係数を設定する場合などに有用である。反射率 $ R $ と減衰係数 $ k := \ks + \ka $ が与えられたと

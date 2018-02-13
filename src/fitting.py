@@ -38,6 +38,12 @@ def formula2( ks, ka, gamma ):
     rc = (1.0 - ra) / (1.0 + gamma * ra)
     return rc
 
+def formula3( ks, ka, a, b ):
+    ra = ka / (ks + ka)
+    rb = numpy.sqrt( ra )
+    rc = (1.0 - rb) / (1.0 + a * ra + b * rb)
+    return rc
+
 def formula1_inv( r, delta ):
     ka = ((1.0 - r) / (1.0 + r)) ** 2
     return (1.0 - delta) * ka + delta * ka ** 2
@@ -89,7 +95,8 @@ def main():
     #optimize( formula0, [ 0.5, 1.0 ] )
     #optimize( formula1, [ 0.0 ] )
     #optimize( formula2, [ 1.0 ] )
-    plot()
+    optimize( formula3, [ 0.0, 1.0 ] )
+    #plot()
 
 
 main()
