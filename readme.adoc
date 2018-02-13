@@ -1,8 +1,26 @@
-= Approximation for reflectance from semi-infinite medium
+= An approximation for reflectance from semi-infinite medium
 
 The simple analytical approximation for reflectance from semi-infinite medium
-which have a scattering and absorption. Inverse transformation (reflectance to
-scattering/absorption coefficients) are also introduced.
+which have a scattering and absorption. Its inverse transformation (reflectance
+to scattering/absorption coefficients) has also simple analytical solution.
 
 See link:build/transfer.pdf[build/transfer.pdf] (currently written only in
 Japanese).
+
+== TL; DR
+
+----
+ks : Scattering coefficient
+ka : Absorption coefficient
+ k : Attenuation (= ks + ka)
+ R : Reflectance
+ γ = 1.4
+
+ks, ka => R
+    P = sqrt(ka / (ks + ka))
+    R = (1 - P) / (1 + γ * P)
+
+R, k => ks, ka
+    ka = k * ((1 - R) / (1 + γ * R)) ^ 2
+    ks = 1 - ka
+----

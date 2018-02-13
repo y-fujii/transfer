@@ -24,13 +24,19 @@ def error_log_max( xs, ys ):
     return numpy.max( (xs_log - ys_log) ** 2 )
 
 def formula0( ks, ka, alpha, beta ):
-    rc = ((ks + ka) ** alpha - ka ** alpha) / ((ks + ka) ** alpha + ka ** alpha)
+    ra = (ka / (ks + ka)) ** alpha
+    rc = (1.0 - ra) / (1.0 + ra)
     return rc ** beta
 
 def formula1( ks, ka, delta ):
-    ra = ka / (ks + ka)
-    rc = (1.0 - numpy.sqrt( ra )) / (1.0 + numpy.sqrt( ra ))
+    ra = numpy.sqrt( ka / (ks + ka) )
+    rc = (1.0 - ra) / (1.0 + ra)
     return (1.0 - delta) * rc + delta * rc ** 2
+
+def formula2( ks, ka, gamma ):
+    ra = numpy.sqrt( ka / (ks + ka) )
+    rc = (1.0 - ra) / (1.0 + gamma * ra)
+    return rc
 
 def formula1_inv( r, delta ):
     ka = ((1.0 - r) / (1.0 + r)) ** 2
@@ -43,7 +49,7 @@ def print_errors( xs, ys ):
         print( "rel max: %f" % math.exp( math.sqrt( error_log_max( xs, ys ) ) ) )
 
 def optimize( formula, x0 ):
-    data = numpy.loadtxt( "data.txt" )
+    data = numpy.loadtxt( "build/data.txt" )
     ks = data[:, 0]
     rs = data[:, 1]
     ka = 1.0 - ks
@@ -56,12 +62,12 @@ def optimize( formula, x0 ):
         print_errors( rs, formula( ks, ka, *result.x ) )
 
 def plot():
-    data = numpy.loadtxt( "data.txt" )
+    data = numpy.loadtxt( "build/data.txt" )
     ks = data[:, 0]
     rs = data[:, 1]
     ka = 1.0 - ks
 
-    ra = formula1( ks, ka, 0.170 )
+    ra = formula2( ks, ka, 1.40 )
     print_errors( rs, ra )
 
     pyplot.rc( "text", usetex = True )
@@ -80,7 +86,9 @@ def plot():
 
 
 def main():
+    #optimize( formula0, [ 0.5, 1.0 ] )
     #optimize( formula1, [ 0.0 ] )
+    #optimize( formula2, [ 1.0 ] )
     plot()
 
 
