@@ -1,11 +1,17 @@
 = An approximation for reflectance from semi-infinite medium
 
-The simple analytical approximation for reflectance from semi-infinite medium
-which have a scattering and absorption. Its inverse transformation (reflectance
-to scattering/absorption coefficients) has also simple analytical solution.
+I introduce a simple analytical approximation for reflectance from
+semi-infinite medium which has a scattering and absorption. Its inverse
+transformation (reflectance to scattering/absorption coefficients) has also
+simple analytical solution.
 
 See link:build/transfer.pdf[build/transfer.pdf] (currently written only in
 Japanese).
+
+Although this work is original, it is obvious that similar works exist (...and
+they are most likely better than mine) since it seems a very basic and common
+problem.  Unfortunately I cannot find them, at least freely avaiable on the
+Web.  Let me know if you find them and I should cite them.
 
 == TL; DR
 

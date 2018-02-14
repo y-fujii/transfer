@@ -4,7 +4,6 @@
 import math
 import numpy
 import scipy.optimize
-from matplotlib import pyplot
 
 
 def error_lin( xs, ys ):
@@ -67,22 +66,25 @@ def optimize( formula, x0 ):
         print( error_func.__name__, result.x )
         print_errors( rs, formula( ks, ka, *result.x ) )
 
-def plot():
+def plot( formula, x ):
+    from matplotlib import pyplot
+
     data = numpy.loadtxt( "build/data.txt" )
     ks = data[:, 0]
     rs = data[:, 1]
     ka = 1.0 - ks
 
-    ra = formula2( ks, ka, 1.40 )
+    ra = formula( ks, ka, *x )
     print_errors( rs, ra )
 
-    pyplot.rc( "text", usetex = True )
+    #pyplot.rc( "text", usetex = True )
     pyplot.xlabel( "$ k_\mathrm{s}, 1 - k_\mathrm{a} $" )
-    pyplot.ylabel( "$ R $" )
+    pyplot.ylabel( "Reflectance" )
     pyplot.xlim( 0.0, 1.0 )
     pyplot.ylim( 0.0, 1.0 )
-    pyplot.plot( ks, ra )
-    pyplot.plot( ks[::50], rs[::50], "+" )
+    pyplot.plot( ks, ra, label = "$ \~R $" )
+    pyplot.plot( ks[::50], rs[::50], "+", label = "Monte Carlo" )
+    pyplot.legend()
     pyplot.savefig( "build/plot.pdf" )
     pyplot.show()
     #pyplot.yscale( "log" )
@@ -96,7 +98,7 @@ def main():
     #optimize( formula1, [ 0.0 ] )
     #optimize( formula2, [ 1.0 ] )
     optimize( formula3, [ 0.0, 1.0 ] )
-    #plot()
+    #plot( formula2, [ 1.4 ] )
 
 
 main()
