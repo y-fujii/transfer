@@ -3,15 +3,17 @@
 \documentclass{ltjsarticle}
 \usepackage{amsmath}
 \usepackage{newunicodechar}
-\usepackage{hyperref}
 \usepackage{graphicx}
 \usepackage{luatexja}
 
 % \block{macro}{
+	\newunicodechar{Φ}{\Phi}
 	\newunicodechar{Ω}{\Omega}
+	\newunicodechar{Θ}{\Theta}
 	\newunicodechar{α}{\alpha}
 	\newunicodechar{γ}{\gamma}
 	\newunicodechar{δ}{\delta}
+	\newunicodechar{μ}{\mu}
 	\newunicodechar{ε}{\epsilon}
 	\newunicodechar{θ}{\theta}
 	\newunicodechar{π}{\pi}
@@ -30,11 +32,15 @@
 	\def\d{\mathrm{d}}
 	\def\L{\left}
 	\def\R{\right}
+	\def\where{\quad\mathrm{where}\quad}
 
 	\def\ks{{k_{\mathrm s}}}
 	\def\ka{{k_{\mathrm a}}}
 	\def\vx{\vec{x}}
+	\def\vn{\vec{n}}
 	\def\vω{\vec{ω}}
+
+	\setcounter{section}{-1}
 % }
 
 \block{document}{
@@ -43,68 +49,95 @@
 	\date{\empty}
 	\maketitle
 
-	かきかけ。
+	201804: 非等方散乱に対応したバージョンに書き換え中。小手先の修正なので途中式に不備が多いかも。
 
-	\block{align}{
+	XXX: かきかけ。
+
+	\block{abstract}{
+		散乱・吸収のある半無限一様媒質による反射率の近似式を求める。放射伝達方程式の適当な基底で展開し二状態近似を行う。
+		得られる近似式は定性的に良い性質を持つものの、最大で 10\% 程度の誤差がある。しかし、一部の係数をフィッティングに
+		より少し修正するなどの方法で精度を大幅に向上させることが可能である。ここでは Henyey-Greenstein 位相関数への対応
+		と同時に精度の改善を行い、非常にシンプルな近似式を導出する方法を示した。
+	}
+
+	\section{用いる記号}
+
+	\block{align*}{
 		\ks &\, [1 / \mathrm{m}] && \text{: 散乱係数} \\
 		\ka &\, [1 / \mathrm{m}] && \text{: 吸収係数} \\
 		I(t, \vx, \vω) &\, [\mathrm{W} / \mathrm{m}^2 \cdot \mathrm{sr}] && \text{: 位置 $ \vx $, 方向 $ \vω $ の放射輝度} \\
-		\vec{n}(\vω) &\, && \text{: $ \vω $ 方向の単位ベクトル}
+		\vn(\vω) &\, && \text{: $ \vω $ 方向の単位ベクトル} \\
+		Ω_{z+} &\, && \text{: $ z^+ $ 半球立体角} \\
+		Ω_{z-} &\, && \text{: $ z^- $ 半球立体角}
 	}
+	近似式については文字にチルダをつけることとする。
 
-	散乱・吸収のある半無限一様媒質による反射率の近似式を求める。ここでの反射率は、媒質へ入射する放射発散度
-	($ = ∫ \d Ω(\vω) \, (\vec{n}(\vω) \cdot \vec{N}) I(\vω) $ ; $ \vec{N} $ は境界面の法線ベクトル) と出射する放射発散度
-	の比と定義する。
+	\section{方程式の近似解}
 
-	$ z = 0 $ を境界として $ z < 0 $ の空間に一様な媒質が存在し、 $ z > 0 $ の空間は真空である状況を考える。以下、この状
-	況下で放射伝達方程式 (Radiative transfer equation; RTE) の近似解を求め、媒質への入射量と出射量の比から反射率を計算す
-	る。
+	散乱・吸収のある半無限一様媒質による反射率の近似式を求める。ここでの反射率は、空間・方向について一様な放射輝度をもつ
+	環境光をあてたとき、入射する放射発散度
+	($ = ∫ \d Ω(\vω) \, (\vn(\vω) \cdot \vec{N}) I(\vω) $ ; $ \vec{N} $ は境界面の法線ベクトル) と出射する放射発散度の比
+	と定義する。
 
-	等方散乱、一様媒質下での RTE は次式で表される。
+	$ z = 0 $ を境界として $ z < 0 $ の空間に一様な媒質が存在し、 $ z > 0 $ の空間は真空である状況を考える（図 XXX）。以
+	下、この状況下で放射伝達方程式 (radiative transfer equation; RTE) の近似解を求め、媒質への入射量と出射量の比から反射
+	率を計算する。
+
+	一様媒質下での RTE は次式で表される。
 	\block{equation}{
-		\frac{∂ I(t, \vx, \vω)}{∂ t} + \vec{n}(\vω) \cdot ∇ I(t, \vx, \vω) =
-		-(\ks + \ka) I(t, \vx, \vω) + \frac{\ks}{4 π} ∫ \d Ω(\vω') \, I(t, \vx, \vω') \,.
+		\frac{1}{c} \frac{∂ I(t, \vx, \vω)}{∂ t} + \vn(\vω) \cdot ∇ I(t, \vx, \vω) =
+		-(\ks + \ka) I(t, \vx, \vω) + \frac{\ks}{4 π} ∫ \d Ω(\vω') \, Φ(\vn(\vω) \cdot \vn(\vω')) I(t, \vx, \vω') \,.
 	}
-
-	$ I(\cdot) $ は $ t, x, y $ 方向について一様なので、 $ θ $ を $ +z $ となす角度として、
+	ここで $ Φ(\cdot) $ は位相関数 (phase function) と呼ばれる散乱の分布を表す関数で、
+	\block{align}{
+		Φ(\vn(\vω) \cdot \vn(\vω')) &\ge 0 \\
+		\frac{1}{4 π} ∫ \d Ω(\vω') \, Φ(\vn(\vω) \cdot \vn(\vω')) &= 1 \,,
+	}
+	を満たす。
+	
+	状況設定から、方程式は $ t, x, y $ 方向について一様な解を持つと考えられる。この場合 $ θ $ を $ +z $ となす角度として、
 	\block{equation}{
 		\cos θ \frac{∂ I(z, θ)}{∂ z} =
-		-(\ks + \ka) I(z, θ) + \frac{\ks}{2} ∫_0^π \d θ' \sin θ' \, I(z, θ') \,, \label{rte_z}
+		-(\ks + \ka) I(z, θ) + \frac{\ks}{2} ∫_0^π \d θ' \sin θ' \, Φ(\cos(θ - θ')) I(z, θ') \,,
 	}
 	と簡略化される。
 
-	$ I(\cdot) $ が立体角について $ z^-, z^+ $ 半球上でそれぞれ一様に近いと仮定し、次のように展開する。 $ h(\cdot) $ を
-	階段関数として、
+	次に $ I(\cdot) $ が立体角について $ Ω_{z+}, Ω_{z-} $ 上でそれぞれ一様に近いと仮定し、次のように展開する。
+	$ h(\cdot) $ を階段関数として、
 	\block{equation}{
 		I(z, θ) = h \L(\frac{π}{2} - θ \R) I_↑(z) + h \L( θ - \frac{π}{2} \R) I_↓(z) + ε(z, θ) \,,
-		\  |ε|, \L| \frac{∂ ε}{∂ z} \R| \ll |I_↑|, |I_↓|  \,. \label{i_approx}
+		\  |ε|, \L| \frac{∂ ε}{∂ z} \R| \ll |I_↑|, |I_↓|  \,.
 	}
 
-	(\ref{rte_z}) に (\ref{i_approx}) を代入し、両辺を $ z^+ $ 半球上で一様に立体角積分
-	( $ ∫_0^{π/2} \d θ \sin θ $ ) すると、
-	\block{equation}{
-		+\frac{1}{2} \frac{\d I_↑}{\d z} = -(\ks + \ka) I_↑ + \frac{\ks}{2} (I_↑ + I_↓) + O(ε) \,. \label{upper_int}
+	RTE にこの展開式を代入し、両辺を $ Ω_{z+} $ 上で一様に立体角積分 ( $ ∫_0^{π/2} \d θ \sin θ $ ) すると、
+	\block{align}{
+		+\frac{1}{2} \frac{\d I_↑}{\d z} &= -(\ks + \ka) I_↑ + \ks \bigl[ (1 - H) I_↑ + H I_↓ \bigr] + O(ε) \,. \label{upper_int} \\
+		%+\frac{1}{2} \frac{\d I_↑}{\d z} = -(\ks + \ka) I_↑ + \frac{\ks}{2} (I_↑ + I_↓) + O(ε) \,. \label{upper_int}
+		\where
+		H &:= ∫_0^π \dθ \sinθ ∫_π^{2π} \dθ' Φ(\cos(θ - θ')) \,.
 	}
+	$ H $ は下方向 ($ Ω_{z+} $) に進んでいた光が散乱したとき上方向 ($ Ω_{z-} $) を向く割合に相当し、この近似において位相
+	関数 $ Φ(\cdot) $ の情報を受け持つ唯一の量である。
  
-	同様に $ z^- $ 半球で積分 ( $ ∫_{π/2}^π \d θ \sin θ $ ) すると、
+	同様に $ Ω_{z-} $ で積分 ( $ ∫_{π/2}^π \d θ \sin θ $ ) すると、
 	\block{equation}{
-		-\frac{1}{2} \frac{\d I_↓}{\d z} = -(\ks + \ka) I_↓ + \frac{\ks}{2} (I_↑ + I_↓) + O(ε) \,. \label{lower_int}
+		-\frac{1}{2} \frac{\d I_↓}{\d z} = -(\ks + \ka) I_↓ + \ks \bigl[ H I_↑ + (1 - H) I_↓ \bigr] + O(ε) \,. \label{lower_int}
+		%-\frac{1}{2} \frac{\d I_↓}{\d z} = -(\ks + \ka) I_↓ + \frac{\ks}{2} (I_↑ + I_↓) + O(ε) \,. \label{lower_int}
 	}
 
-	この計算は次の操作を行ったことに相当している。単位球面上で定義される実関数のなす空間に対し、内積を
-	$ \langle f, g \rangle := ∫ \d Ω(\vω) \, f(\vω) g(\vω) $ で導入し、それぞれ $ z^+, z^- $ 半球のみで一様な値を持つ関
-	数 2 つを基底として含む直交関数系を用意する。この直交関数系で $ I(\cdot) $ を立体角について展開し、係数について成り
-	立つ方程式が (\ref{upper_int}), (\ref{lower_int}) である。
+	この近似計算は次の操作を行ったことに相当している。単位球面上で定義される実関数のなす空間に対し、内積を
+	$ \langle f, g \rangle := ∫ \d Ω(\vω) \, f(\vω) g(\vω) $ で導入し、それぞれ $ Ω_{z+}, Ω_{z-} $ のみで一様な値を持つ
+	関数 2 つを基底として含む直交関数系を用意する。この直交関数系で $ I(\cdot) $ を立体角について展開し、係数について成
+	り立つ方程式が (\ref{upper_int}), (\ref{lower_int}) である。
  
-	さて、 $ ε $ を無視して (\ref{upper_int}), (\ref{lower_int}) を連立させて解くと、一般解は $ \ka \ne 0 $ のとき
-	$ A, B $ を任意の定数として、
+	さて、 $ ε $ を無視して (\ref{upper_int}), (\ref{lower_int}) を連立させて解く（もちろん一般には、微分方程式の特定の
+	項が小さいからといって無視できるとは限らない）と、一般解は $ \ka \ne 0 $ のとき $ A, B $ を任意の定数として、
 	\block{align}{
 		I_↑(z) &= A (1 + P) e^{-α z} + B (1 - P) e^{+α z} \\
-		I_↓(z) &= A (1 - P) e^{-α z} - B (1 + P) e^{+α z} \,,
-	}
-	\block{align}{
-		α &= 2 √{\ka (\ks + \ka)} \\
-		P &= √{\frac{\ka}{\ks + \ka}} \,.
+		I_↓(z) &= A (1 - P) e^{-α z} - B (1 + P) e^{+α z} \\
+		\where
+		α &:= 2 √{\ka (2 H \ks + \ka)} \\
+		P &:= √{\frac{\ka}{2 H \ks + \ka}} \,. \label{pee}
 	}
 
 	次に境界条件を考える。真空部分について $ I_↑(z), I_↓(z) $ は一定であり、 $ I_↓ $ が媒質への入射、 $ I_↑ $ が出射に対
@@ -115,32 +148,120 @@
 	が課される。また、屈折率が変わらないので、 $ z = 0 $ の境界では単純に $ I_↑(z), I_↓(z) $ が連続であることが条件とな
 	る。
 
-	以上より、 $ z = 0 $ 平面から媒質へ入射した光の反射率は、
-	\block{align}{
-		R = \frac{I_↑(0)}{I_↓(0)} = \frac{1 - P}{1 + P} \,.
+	以上より、 $ z = 0 $ 平面から媒質へ入射した光の反射率を計算すると、
+	\block{equation}{
+		\tilde{R} = \frac{I_↑(0)}{I_↓(0)} = \frac{1 - P}{1 + P} \,. \label{refl}
 	}
 
 	半無限の媒質下で反射率は空間スケールに依存しないため、反射率は $ \ks $ と $ \ka $ の比のみで決まる。上式ははこの性質
 	を満たし、かつ $ \ks \ll \ka \Rightarrow R → 0 ,\, \ks \gg \ka \Rightarrow R → 1 $ となり、定性的に良い振る舞いをす
 	る近似になっている (この性質が成り立つかは、実は基底の取り方に依存している。例えば球面調和関数の低次を用いるとこの性
-	質は成り立たない) 。残念ながら $ \ks \simeq \ka $ での値は正しい値と 10\% ほどずれていて、定量的にはそれほど良い近似
-	ではない。
+	質は成り立たない) 。
+	
+	具体的に $ Φ(\cdot) $ が定数、つまり等方散乱の場合にこの近似式を評価したものを図 (\ref{r_of_ks_naive}) に示す。残念
+	ながら最大で正しい値と 10\% ほどずれていて、このままでは定量的にはそれほど良い近似ではない。
 
-	精度を改善するためこの式に少し修正を加え、係数をモンテカルロ法による数値計算の結果から決定する。
+	\begin{figure}
+		\centering
+		\includegraphics[width=80mm]{../data/r_of_ks_naive.pdf}
+		\caption{$ R(\ks, \ka = 1 - \ks, g = 0) $}
+		\label{r_of_ks_naive}
+	\end{figure}
+
+	\section{Henyey-Greenstein 位相関数への対応と近似式の改善}
+
+	今、位相関数 $ Φ(\cdot) $ として Henyey-Greenstein 位相関数
 	\block{equation}{
-		\tilde{R} = \frac{1 - P}{1 + γ P} \,.
+		Φ(μ, g) = \frac{1}{2} \frac{1 - g^2}{(1 + g^2 - 2 g μ)^{3/2}} \,, -1 \le g \le 1 \,,
+	}
+	を考える。対応する $ H $ を $ g $ の関数としてプロットすると、図 (\ref{h_of_g_integrated}) のようになる。
+	
+	$ H(g) $ は初等関数では表せない（たぶん…）が滑らかな関数なので、適当な近似式を作るのは難しくない。しかし、ここでは次
+	のようなアプローチを採ることで、近似式 (\ref{refl}), (\ref{pee}) の改善も同時に行う。
+	\block{enumerate}{
+		\item モンテカルロ計算によって様々な $ \ks, \ka, g $ から反射率 $ R $ を求めておく。
+		\item $ H(g) $ を未知と考え、 $ \bigl\{ (\ks, \ka, g, R) \bigr\} $ から近似式 (\ref{refl}), (\ref{pee}) を用いて
+			  逆算する。
 	}
 
-	何を最小化するかに依って多少変わってくるが、 $ γ = 1.4 $ で平均絶対誤差 $ 2 \times {10}^{-3} $, 平均相対誤差 1\% 未
-	満となる。ちなみに分母を $ 1 + γ P + δ P^2 $ の形にすることで、もう一桁ほど良い近似式を作ることも可能である。
+	具体的に $ \ks = 1 - \ka = 1/8, 2/8, \cdots, 7/8 $ ととって $ H(g) $ を逆算すると、図 (\ref{h_of_g_inversed}) のよう
+	になる。
+	
+	\begin{figure}
+		\begin{minipage}{0.5 \hsize}
+			\centering
+			\includegraphics[width=80mm]{../data/h_of_g_integrated.pdf}
+			\caption{$ H(g) $}
+			\label{h_of_g_integrated}
+		\end{minipage}
+		\begin{minipage}{0.5 \hsize}
+			\centering
+			\includegraphics[width=80mm]{../data/h_of_g_inversed.pdf}
+			\caption{$ \tilde{H}(g) $}
+			\label{h_of_g_inversed}
+		\end{minipage}
+	\end{figure}
+	
+	近似式を逆算に用いているため $ Φ(\cdot) $ を積分した関数とはカーブが変化し、少し $ \ks, \ka $ 依存性が出ている
+	が、後方散乱が強くなければ
+	\block{equation}{
+		\tilde{H}(g) = \frac{γ}{2} (1 - g) \where γ = 0.80 \,,
+	}
+	という簡単な式で比較的よく近似できることが分かる（このグラフ上での誤差がそのまま反射率 $ R $ の誤差になるわけではな
+	いことに注意）。
 
-	この式は逆変換、つまり反射率から散乱・吸収係数を求める式もシンプルな形をしている。これは CG ソフトウェアなどで、反射
-	色から媒質の散乱・吸収係数を設定する場合などに有用である。反射率 $ R $ と減衰係数 $ k := \ks + \ka $ が与えられたと
-	き、上式を $ \ks, \ka $ について解くと、
+	\section{評価}
+
+	** かきかけ **
+	
+	\begin{figure}[h]
+		\begin{minipage}{0.333 \hsize}
+			\centering
+			\includegraphics[width=55mm]{../data/r_of_ks_g_m5.pdf}
+			\caption{$ \tilde{R}(\ks, \ka = 1 - \ks, g = -0.5) $}
+		\end{minipage}
+		\begin{minipage}{0.333 \hsize}
+			\centering
+			\includegraphics[width=55mm]{../data/r_of_ks_g_00.pdf}
+			\caption{$ \tilde{R}(\ks, \ka = 1 - \ks, g = 0.0) $}
+		\end{minipage}
+		\begin{minipage}{0.333 \hsize}
+			\centering
+			\includegraphics[width=55mm]{../data/r_of_ks_g_p5.pdf}
+			\caption{$ \tilde{R}(\ks, \ka = 1 - \ks, g = +0.5) $}
+		\end{minipage}
+	\end{figure}
+
+	\begin{figure}[h]
+		\begin{minipage}{0.333 \hsize}
+			\centering
+			\includegraphics[width=55mm]{../data/r_of_g_ks_25.pdf}
+			\caption{$ \tilde{R}(\ks = 0.25, \ka = 0.75, g) $}
+		\end{minipage}
+		\begin{minipage}{0.333 \hsize}
+			\centering
+			\includegraphics[width=55mm]{../data/r_of_g_ks_50.pdf}
+			\caption{$ \tilde{R}(\ks = 0.50, \ka = 0.50, g) $}
+		\end{minipage}
+		\begin{minipage}{0.333 \hsize}
+			\centering
+			\includegraphics[width=55mm]{../data/r_of_g_ks_75.pdf}
+			\caption{$ \tilde{R}(\ks = 0.75, \ka = 0.25, g) $}
+		\end{minipage}
+	\end{figure}
+
+	\section{ここだけ読めばとりあえず使える}
+
+	以上をまとめると、反射率 $ R(\ks, \ka, g) $ の近似式が
 	\block{align}{
-		\ka &= k {\L( \frac{1 - \tilde{R}}{1 + γ \tilde{R}} \R) }^2 \\
-		\ks &= k - \ka \,.
+		\tilde{R} &= \frac{1 - P}{1 + P} \\
+		\where
+		P &= √{\frac{\ka}{γ (1 - g) \ks + \ka}} \\
+		γ &= 0.80\,.
 	}
+	として得られた。
 
-	\includegraphics{../build/plot.pdf}
+	この式の良い点として、逆変換、つまり反射率から散乱・吸収係数を求める式もシンプルな形をしていることが挙げられる。これ
+	は CG ソフトウェアなどで、反射色から媒質の散乱・吸収係数を設定する場合などに有用である。反射率 $ R $ と減衰係数
+	$ k := \ks + \ka $ が与えられたとき、上式を $ \ks, \ka $ について解くと、
 }

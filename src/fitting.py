@@ -43,6 +43,11 @@ def formula3( ks, ka, a, b ):
     rc = (1.0 - rb) / (1.0 + a * ra + b * rb)
     return rc
 
+def formula4( ks, ka, gamma ):
+    ra = numpy.sqrt( ka / (gamma * ks + ka) )
+    rc = (1.0 - ra) / (1.0 + ra)
+    return rc
+
 def formula1_inv( r, delta ):
     ka = ((1.0 - r) / (1.0 + r)) ** 2
     return (1.0 - delta) * ka + delta * ka ** 2
@@ -69,13 +74,18 @@ def optimize( formula, x0 ):
 def plot( formula, x ):
     from matplotlib import pyplot
 
-    data = numpy.loadtxt( "build/data.txt" )
+    data = numpy.loadtxt( "build/data_m075.txt" )
     ks = data[:, 0]
     rs = data[:, 1]
     ka = 1.0 - ks
 
-    ra = formula( ks, ka, *x )
+    g = -0.75
+    #a = 0.5 - math.asin( 0.96 * g ) * (0.5 / math.asin( 0.96 ))
+    a = 0.8 - g + 0.2 * g * g
+    ra = formula( a * ks, ka, 1.0 )
     print_errors( rs, ra )
+
+    xs = 0.0
 
     #pyplot.rc( "text", usetex = True )
     pyplot.xlabel( "$ k_\mathrm{s}, 1 - k_\mathrm{a} $" )
@@ -83,9 +93,9 @@ def plot( formula, x ):
     pyplot.xlim( 0.0, 1.0 )
     pyplot.ylim( 0.0, 1.0 )
     pyplot.plot( ks, ra, label = "$ \~R $" )
-    pyplot.plot( ks[::50], rs[::50], "+", label = "Monte Carlo" )
+    pyplot.plot( ks, rs, label = "Monte Carlo" )
     pyplot.legend()
-    pyplot.savefig( "build/plot.pdf" )
+    #pyplot.savefig( "build/plot.pdf" )
     pyplot.show()
     #pyplot.yscale( "log" )
     #pyplot.plot( ks, ra )
@@ -97,7 +107,9 @@ def main():
     #optimize( formula0, [ 0.5, 1.0 ] )
     #optimize( formula1, [ 0.0 ] )
     #optimize( formula2, [ 1.0 ] )
-    optimize( formula3, [ 0.0, 1.0 ] )
+    #optimize( formula3, [ 0.0, 1.0 ] )
+    #optimize( formula4, [ 1.0 ] )
+    plot( formula4, [ 0.8 ] )
     #plot( formula2, [ 1.4 ] )
 
 
